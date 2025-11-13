@@ -26,9 +26,42 @@ jobs:
       with:
         java-version: '8'
         distribution: 'temurin'
-        cache: maven
+        #cache: maven
+    
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+            ${{ runner.os }}-maven-
+
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      #run: mvn -B package --file pom.xml
+      run: mvn clean package     #add -DskipTests to skip test cases.
+      
+    - name: Run Snyk to check for vulnerabilities (Fail on High severity)
+      #uses: snyk/actions/maven@master
+      run: |
+        snyk auth $SNYK_TOKEN
+        snyk test --severity-threshold=high --json > snyk-report.json
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #with:    #with can not be used with run, so commenting with attribute and its dependencies.
+        #command: monitor
+        #args: test --severity-threshold=high      #This will run snyk test on every push and pull request to main.
+
+    - name: Generate HTML Report
+      run: |
+        npm install -g snyk-to-html
+        snyk-to-html -i snyk-report.json -o snyk-report.html     #Converts JSON output into a readable HTML report.
+
+      
+    - name: Upload HTML Report as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+          name: snyk-html-report
+
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     #- name: Update dependency graph
