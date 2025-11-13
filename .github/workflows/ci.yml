@@ -39,7 +39,13 @@ jobs:
     - name: Build with Maven
       #run: mvn -B package --file pom.xml
       run: mvn clean package     #add -DskipTests to skip test cases.
+
       
+    - name: Install Snyk CLI
+      run: |
+        curl -sL https://snyk.io/install.sh | bash
+        snyk --version
+
     - name: Run Snyk to check for vulnerabilities (Fail on High severity)
       #uses: snyk/actions/maven@master
       run: |
@@ -58,7 +64,7 @@ jobs:
 
       
     - name: Upload HTML Report as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4    #you can download the report from the GitHub Actions run.
       with:
           name: snyk-html-report
 
