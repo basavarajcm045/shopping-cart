@@ -40,11 +40,11 @@ jobs:
       #run: mvn -B package --file pom.xml
       run: mvn clean package     #add -DskipTests to skip test cases.
 
-      
-    - name: Install Snyk CLI
-      run: |
-        curl -sL https://snyk.io/install.sh | bash
-        snyk --version
+     #Install Snyk is might not require, check 
+    #- name: Install Snyk CLI
+      #run: |
+        #curl -sL https://snyk.io/install.sh | bash
+        #snyk --version
 
     - name: Run Snyk to check for vulnerabilities (Fail on High severity)
       #uses: snyk/actions/maven@master
