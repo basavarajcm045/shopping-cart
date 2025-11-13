@@ -47,16 +47,16 @@ jobs:
         #snyk --version
 
     - name: Run Snyk to check for vulnerabilities (Fail on High severity)
-      #uses: snyk/actions/maven@master
-      run: |
-        snyk auth $SNYK_TOKEN
-        snyk test --severity-threshold=high --json > snyk-report.json
+      #run: |
+        #snyk auth $SNYK_TOKEN
+        #snyk test --severity-threshold=high --json > snyk-report.json
+      uses: snyk/actions/maven@master
+      with:    #with can not be used with run, so commenting with attribute and its dependencies.
+        command: monitor
+        args: test --severity-threshold=high      #This will run snyk test on every push and pull request to main.
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      #with:    #with can not be used with run, so commenting with attribute and its dependencies.
-        #command: monitor
-        #args: test --severity-threshold=high      #This will run snyk test on every push and pull request to main.
-
+      
     - name: Generate HTML Report
       run: |
         npm install -g snyk-to-html
